@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import majsoul_pb2 as pb
+from PyMajsoul import majsoul_pb2 as pb
 import json
 import sys
 import base64
