@@ -137,7 +137,7 @@ async def main():
 
 async def decode_records(records):
     total = len(records)
-    print("Fetching detail data")
+    print("Fetching details")
     async with aiohttp.ClientSession() as session:
         for i, r in enumerate(records):
             print("({}/{})Processing {}".format(i + 1, total, r))
@@ -149,10 +149,10 @@ async def decode_records(records):
                 continue
             if "dataUrl" in data:
                 url = data["dataUrl"]
-                print("({}/{})Fetching detail data for {}".format(i + 1, total, r))
+                print("({}/{})Fetching details for {}".format(i + 1, total, r))
                 async with session.get(url) as res:
                     details = await res.read()
-                print("({}/{})Fetched detail data for {}".format(i + 1, total, r))
+                print("({}/{})Fetched details  for {}".format(i + 1, total, r))
                 data["data"] = base64.b64encode(details).decode()
                 with open(path, "w") as f:
                     print("({}/{})Saving {}".format(i + 1, total, r))
@@ -160,13 +160,16 @@ async def decode_records(records):
                 continue
             print("({}/{})Neither data or dataUrl in {}, skipping".format(i + 1, total, r))
 
-    print("Decoding detail data")
+    print("Decoding details")
 
     for i, r in enumerate(records):
         print("({}/{})Processing {}".format(i + 1, total, r))
         path = os.path.join(basedir, r)
         with open(path) as f:
             data = json.load(f)
+        if "details" in data:
+            print("({}/{})Details present in {}, skipping".format(i + 1, total, r))
+            continue
         blob = base64.b64decode(data['data'])
 
         wrapper = pb.Wrapper()
