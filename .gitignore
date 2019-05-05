@@ -1,4 +1,3 @@
-dumpServer/cert.pem
-dumpServer/key.pem
 __pycache__/
 .majsoul
+.envrc
