@@ -118,6 +118,7 @@ message NotifyVipLevelChange {
   uint32 zhp_free_refresh_limit = 3;
   uint32 zhp_cost_refresh_limit = 4;
   float buddy_bonus = 5;
+  uint32 record_collect_limit = 6;
 }
 
 message NotifyServerSetting {
@@ -408,6 +409,8 @@ message GameDetailRule {
   uint32 ai_level = 38;
   bool have_zimosun = 39;
   bool disable_multi_yukaman = 40;
+  uint32 fanfu = 41;
+  uint32 guyi_mode = 42;
 }
 
 message Room {
@@ -914,7 +917,7 @@ message GameRoundPlayerResult {
 }
 
 message GameRoundPlayer {
-  uint32 score = 1;
+  int32 score = 1;
   uint32 rank = 2;
   GameRoundPlayerResult result = 3;
 }
@@ -964,6 +967,13 @@ message GameFinalSnapshot {
 
 }
 
+message RecordCollectedData {
+  string uuid = 1;
+  string remarks = 2;
+  uint32 start_time = 3;
+  uint32 end_time = 4;
+}
+
 service Lobby {
   rpc fetchConnectionInfo (ReqCommon) returns (ResConnectionInfo);
   rpc signup (ReqSignupAccount) returns (ResSignupAccount);
@@ -999,6 +1009,11 @@ service Lobby {
   rpc shopPurchase (ReqShopPurchase) returns (ResShopPurchase);
   rpc fetchGameRecord (ReqGameRecord) returns (ResGameRecord);
   rpc fetchGameRecordList (ReqGameRecordList) returns (ResGameRecordList);
+  rpc fetchCollectedGameRecordList (ReqCommon) returns (ResCollectedGameRecordList);
+  rpc fetchGameRecordsDetail (ReqGameRecordsDetail) returns (ResGameRecordsDetail);
+  rpc addCollectedGameRecord (ReqAddCollectedGameRecord) returns (ResAddCollectedGameRecord);
+  rpc removeCollectedGameRecord (ReqRemoveCollectedGameRecord) returns (ResRemoveCollectedGameRecord);
+  rpc changeCollectedGameRecordRemarks (ReqChangeCollectedGameRecordRemarks) returns (ResChangeCollectedGameRecordRemarks);
   rpc fetchLevelLeaderboard (ReqCommon) returns (ResLevelLeaderboard);
   rpc fetchMultiAccountBrief (ReqMultiAccountId) returns (ResMultiAccountBrief);
   rpc fetchFriendList (ReqCommon) returns (ResFriendList);
@@ -1348,12 +1363,56 @@ message ResGameRecord {
 message ReqGameRecordList {
   uint32 start = 1;
   uint32 count = 2;
+  uint32 type = 3;
 }
 
 message ResGameRecordList {
   Error error = 1;
   uint32 total_count = 2;
   repeated RecordGame record_list = 3;
+}
+
+message ResCollectedGameRecordList {
+  Error error = 1;
+  repeated RecordCollectedData record_list = 2;
+  uint32 record_collect_limit = 3;
+}
+
+message ReqGameRecordsDetail {
+  repeated string uuid_list = 1;
+}
+
+message ResGameRecordsDetail {
+  Error error = 1;
+  repeated RecordGame record_list = 2;
+}
+
+message ReqAddCollectedGameRecord {
+  string uuid = 1;
+  string remarks = 2;
+  uint32 start_time = 3;
+  uint32 end_time = 4;
+}
+
+message ResAddCollectedGameRecord {
+  Error error = 1;
+}
+
+message ReqRemoveCollectedGameRecord {
+  string uuid = 1;
+}
+
+message ResRemoveCollectedGameRecord {
+  Error error = 1;
+}
+
+message ReqChangeCollectedGameRecordRemarks {
+  string uuid = 1;
+  string remarks = 2;
+}
+
+message ResChangeCollectedGameRecordRemarks {
+  Error error = 1;
 }
 
 message ResLevelLeaderboard {
@@ -2309,6 +2368,9 @@ message HuleInfo {
 message TingPaiInfo {
   string tile = 1;
   bool haveyi = 2;
+  bool yiman = 3;
+  uint32 count = 4;
+  uint32 fu = 5;
 }
 
 message TingPaiDiscardInfo {

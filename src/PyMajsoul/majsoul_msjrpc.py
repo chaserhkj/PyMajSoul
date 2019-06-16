@@ -40,6 +40,11 @@ class Lobby(MSJRpcService):
 "shopPurchase": pb.ReqShopPurchase,
 "fetchGameRecord": pb.ReqGameRecord,
 "fetchGameRecordList": pb.ReqGameRecordList,
+"fetchCollectedGameRecordList": pb.ReqCommon,
+"fetchGameRecordsDetail": pb.ReqGameRecordsDetail,
+"addCollectedGameRecord": pb.ReqAddCollectedGameRecord,
+"removeCollectedGameRecord": pb.ReqRemoveCollectedGameRecord,
+"changeCollectedGameRecordRemarks": pb.ReqChangeCollectedGameRecordRemarks,
 "fetchLevelLeaderboard": pb.ReqCommon,
 "fetchMultiAccountBrief": pb.ReqMultiAccountId,
 "fetchFriendList": pb.ReqCommon,
@@ -191,6 +196,11 @@ class Lobby(MSJRpcService):
 "shopPurchase": pb.ResShopPurchase,
 "fetchGameRecord": pb.ResGameRecord,
 "fetchGameRecordList": pb.ResGameRecordList,
+"fetchCollectedGameRecordList": pb.ResCollectedGameRecordList,
+"fetchGameRecordsDetail": pb.ResGameRecordsDetail,
+"addCollectedGameRecord": pb.ResAddCollectedGameRecord,
+"removeCollectedGameRecord": pb.ResRemoveCollectedGameRecord,
+"changeCollectedGameRecordRemarks": pb.ResChangeCollectedGameRecordRemarks,
 "fetchLevelLeaderboard": pb.ResLevelLeaderboard,
 "fetchMultiAccountBrief": pb.ResMultiAccountBrief,
 "fetchFriendList": pb.ResFriendList,
@@ -455,6 +465,26 @@ class Lobby(MSJRpcService):
 
     async def fetchGameRecordList(self, req):
         return await self.call_method("fetchGameRecordList", req)
+
+
+    async def fetchCollectedGameRecordList(self, req):
+        return await self.call_method("fetchCollectedGameRecordList", req)
+
+
+    async def fetchGameRecordsDetail(self, req):
+        return await self.call_method("fetchGameRecordsDetail", req)
+
+
+    async def addCollectedGameRecord(self, req):
+        return await self.call_method("addCollectedGameRecord", req)
+
+
+    async def removeCollectedGameRecord(self, req):
+        return await self.call_method("removeCollectedGameRecord", req)
+
+
+    async def changeCollectedGameRecordRemarks(self, req):
+        return await self.call_method("changeCollectedGameRecordRemarks", req)
 
 
     async def fetchLevelLeaderboard(self, req):
