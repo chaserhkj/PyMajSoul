@@ -195,9 +195,9 @@ message AccountMahjongStatistic {
   RoundSummary recent_round = 2;
   HuSummary recent_hu = 3;
   HighestHuRecord highest_hu = 4;
-  repeated uint32 recent_ranks = 5;
   Liqi20Summary recent_20_hu_summary = 6;
   LiQi10Summary recent_10_hu_summary = 7;
+  repeated GameResult recent_10_game_result = 8;
   message RoundSummary {
     uint32 total_count = 1;
     uint32 rong_count = 2;
@@ -232,6 +232,11 @@ message AccountMahjongStatistic {
     uint32 total_fanshu = 2;
   }
 
+  message GameResult {
+    uint32 rank = 1;
+    int32 final_point = 2;
+  }
+
 }
 
 message AccountStatisticData {
@@ -254,6 +259,8 @@ message Account {
   AntiAddiction anti_addiction = 6;
   uint32 title = 7;
   string signature = 8;
+  string email = 9;
+  uint32 email_verify = 10;
   uint32 gold = 11;
   uint32 diamond = 12;
   uint32 avatar_id = 13;
@@ -261,7 +268,7 @@ message Account {
   uint32 birthday = 15;
   repeated PlatformDiamond platform_diamond = 18;
   AccountLevel level = 21;
-  AccountShiLian shilian = 22;
+  AccountLevel level3 = 22;
   message PlatformDiamond {
     uint32 id = 1;
     uint32 count = 2;
@@ -336,6 +343,7 @@ message AccountCacheView {
   uint32 vip = 10;
   AccountLevel level = 11;
   AccountPlayingGame playing_game = 12;
+  AccountLevel level3 = 13;
 }
 
 message PlayerBaseView {
@@ -344,6 +352,7 @@ message PlayerBaseView {
   uint32 title = 3;
   string nickname = 4;
   AccountLevel level = 5;
+  AccountLevel level3 = 6;
 }
 
 message PlayerGameView {
@@ -353,6 +362,7 @@ message PlayerGameView {
   string nickname = 4;
   AccountLevel level = 5;
   Character character = 6;
+  AccountLevel level3 = 7;
 }
 
 message GameMode {
@@ -445,6 +455,17 @@ message GameConnectInfo {
   string location = 4;
 }
 
+message ItemGainRecord {
+  uint32 item_id = 1;
+  uint32 count = 2;
+}
+
+message ItemGainRecords {
+  uint32 record_time = 1;
+  uint32 limit_source_id = 2;
+  repeated ItemGainRecord records = 3;
+}
+
 message Item {
   uint32 item_id = 1;
   uint32 stack = 2;
@@ -452,15 +473,22 @@ message Item {
 
 message Bag {
   repeated Item items = 1;
+  repeated ItemGainRecords daily_gain_record = 2;
 }
 
 message BagUpdate {
   repeated Item update_items = 1;
+  repeated ItemGainRecords update_daily_gain_record = 2;
 }
 
 message RewardSlot {
   uint32 id = 1;
   uint32 count = 2;
+}
+
+message OpenResult {
+  RewardSlot reward = 1;
+  RewardSlot replace = 2;
 }
 
 message RewardPlusResult {
@@ -774,6 +802,18 @@ message ChestData {
   uint32 face_black_count = 4;
 }
 
+message ChestDataV2 {
+  uint32 chest_id = 1;
+  uint32 total_open_count = 2;
+  uint32 face_black_count = 3;
+}
+
+message FaithData {
+  uint32 faith_id = 1;
+  uint32 total_open_count = 2;
+  uint32 consume_count = 3;
+}
+
 message CustomizedContestBase {
   uint32 unique_id = 1;
   uint32 contest_id = 2;
@@ -842,6 +882,7 @@ message RecordGame {
     Character character = 5;
     uint32 title = 6;
     AccountLevel level = 7;
+    AccountLevel level3 = 8;
   }
 
 }
@@ -875,6 +916,19 @@ message Activity {
 message ExchangeRecord {
   uint32 exchange_id = 1;
   uint32 count = 2;
+}
+
+message ActivityAccumulatedPointData {
+  uint32 activity_id = 1;
+  int32 point = 2;
+  repeated uint32 gained_reward_list = 3;
+}
+
+message ActivityRankPointData {
+  uint32 leaderboard_id = 1;
+  int32 point = 2;
+  bool gained_reward = 3;
+  uint32 gainable_time = 4;
 }
 
 message GameRoundHuData {
@@ -978,13 +1032,16 @@ service Lobby {
   rpc fetchConnectionInfo (ReqCommon) returns (ResConnectionInfo);
   rpc signup (ReqSignupAccount) returns (ResSignupAccount);
   rpc login (ReqLogin) returns (ResLogin);
+  rpc emailLogin (ReqEmailLogin) returns (ResLogin);
   rpc oauth2Auth (ReqOauth2Auth) returns (ResOauth2Auth);
   rpc oauth2Check (ReqOauth2Check) returns (ResOauth2Check);
   rpc oauth2Signup (ReqOauth2Signup) returns (ResOauth2Signup);
   rpc oauth2Login (ReqOauth2Login) returns (ResLogin);
   rpc createPhoneVerifyCode (ReqCreatePhoneVerifyCode) returns (ResCommon);
+  rpc createEmailVerifyCode (ReqCreateEmailVerifyCode) returns (ResCommon);
   rpc verfifyCodeForSecure (ReqVerifyCodeForSecure) returns (ResVerfiyCodeForSecure);
   rpc bindPhoneNumber (ReqBindPhoneNumber) returns (ResCommon);
+  rpc bindEmail (ReqBindEmail) returns (ResCommon);
   rpc modifyPassword (ReqModifyPassword) returns (ResCommon);
   rpc bindAccount (ReqBindAccount) returns (ResCommon);
   rpc logout (ReqLogout) returns (ResLogout);
@@ -1014,7 +1071,7 @@ service Lobby {
   rpc addCollectedGameRecord (ReqAddCollectedGameRecord) returns (ResAddCollectedGameRecord);
   rpc removeCollectedGameRecord (ReqRemoveCollectedGameRecord) returns (ResRemoveCollectedGameRecord);
   rpc changeCollectedGameRecordRemarks (ReqChangeCollectedGameRecordRemarks) returns (ResChangeCollectedGameRecordRemarks);
-  rpc fetchLevelLeaderboard (ReqCommon) returns (ResLevelLeaderboard);
+  rpc fetchLevelLeaderboard (ReqLevelLeaderboard) returns (ResLevelLeaderboard);
   rpc fetchMultiAccountBrief (ReqMultiAccountId) returns (ResMultiAccountBrief);
   rpc fetchFriendList (ReqCommon) returns (ResFriendList);
   rpc fetchFriendApplyList (ReqCommon) returns (ResFriendApplyList);
@@ -1026,6 +1083,8 @@ service Lobby {
   rpc fetchAccountState (ReqAccountList) returns (ResAccountStates);
   rpc fetchBagInfo (ReqCommon) returns (ResBagInfo);
   rpc useBagItem (ReqUseBagItem) returns (ResCommon);
+  rpc openManualItem (ReqOpenManualItem) returns (ResCommon);
+  rpc openRandomRewardItem (ReqOpenRandomRewardItem) returns (ResOpenRandomRewardItem);
   rpc composeShard (ReqComposeShard) returns (ResCommon);
   rpc fetchAnnouncement (ReqCommon) returns (ResAnnouncement);
   rpc readAnnouncement (ReqReadAnnouncement) returns (ResCommon);
@@ -1129,6 +1188,9 @@ service Lobby {
   rpc fetchAccountActivityData (ReqCommon) returns (ResAccountActivityData);
   rpc exchangeActivityItem (ReqExchangeActivityItem) returns (ResExchangeActivityItem);
   rpc completeActivityTask (ReqCompleteActivityTask) returns (ResCommon);
+  rpc gainAccumulatedPointActivityReward (ReqGainAccumulatedPointActivityReward) returns (ResCommon);
+  rpc fetchRankPointLeaderboard (ReqFetchRankPointLeaderboard) returns (ResFetchRankPointLeaderboard);
+  rpc gainRankPointReward (ReqGainRankPointReward) returns (ResCommon);
 }
 
 message ResConnectionInfo {
@@ -1139,6 +1201,7 @@ message ResConnectionInfo {
 message ReqSignupAccount {
   string account = 1;
   string password = 2;
+  string code = 3;
 }
 
 message ResSignupAccount {
@@ -1165,6 +1228,17 @@ message ResLogin {
   string access_token = 6;
 }
 
+message ReqEmailLogin {
+  string email = 1;
+  string password = 2;
+  bool reconnect = 3;
+  ClientDeviceInfo device = 4;
+  string random_key = 5;
+  string client_version = 6;
+  bool gen_access_token = 7;
+  repeated uint32 currency_platforms = 8;
+}
+
 message ReqBindAccount {
   string account = 1;
   string password = 2;
@@ -1172,6 +1246,11 @@ message ReqBindAccount {
 
 message ReqCreatePhoneVerifyCode {
   string phone = 1;
+  uint32 usage = 2;
+}
+
+message ReqCreateEmailVerifyCode {
+  string email = 1;
   uint32 usage = 2;
 }
 
@@ -1188,6 +1267,12 @@ message ResVerfiyCodeForSecure {
 message ReqBindPhoneNumber {
   string code = 1;
   string secure_token = 2;
+}
+
+message ReqBindEmail {
+  string email = 1;
+  string code = 2;
+  string password = 3;
 }
 
 message ReqModifyPassword {
@@ -1415,6 +1500,10 @@ message ResChangeCollectedGameRecordRemarks {
   Error error = 1;
 }
 
+message ReqLevelLeaderboard {
+  uint32 type = 1;
+}
+
 message ResLevelLeaderboard {
   Error error = 1;
   repeated Item items = 2;
@@ -1501,6 +1590,21 @@ message ResBagInfo {
 
 message ReqUseBagItem {
   uint32 item_id = 1;
+}
+
+message ReqOpenManualItem {
+  uint32 item_id = 1;
+  uint32 count = 2;
+  uint32 select_id = 3;
+}
+
+message ReqOpenRandomRewardItem {
+  uint32 item_id = 1;
+}
+
+message ResOpenRandomRewardItem {
+  Error error = 1;
+  repeated OpenResult results = 2;
 }
 
 message ReqComposeShard {
@@ -1950,11 +2054,6 @@ message ResOpenChest {
   Error error = 1;
   repeated OpenResult results = 2;
   uint32 total_open_count = 3;
-  message OpenResult {
-    RewardSlot reward = 1;
-    RewardSlot replace = 2;
-  }
-
 }
 
 message ReqBuyFromChestShop {
@@ -2100,7 +2199,7 @@ message ResModNicknameTime {
 message ResMisc {
   Error error = 1;
   repeated uint32 recharged_list = 2;
-  repeated ChestData chests = 3;
+  repeated FaithData faiths = 3;
 }
 
 message ReqModifySignature {
@@ -2226,6 +2325,8 @@ message ResAccountActivityData {
   Error error = 1;
   repeated ExchangeRecord exchange_records = 2;
   repeated TaskProgress task_progress_list = 3;
+  repeated ActivityAccumulatedPointData accumulated_point_list = 4;
+  repeated ActivityRankPointData rank_data_list = 5;
 }
 
 message ReqExchangeActivityItem {
@@ -2239,6 +2340,33 @@ message ResExchangeActivityItem {
 
 message ReqCompleteActivityTask {
   uint32 task_id = 1;
+}
+
+message ReqGainAccumulatedPointActivityReward {
+  uint32 activity_id = 1;
+  uint32 reward_id = 2;
+}
+
+message ReqFetchRankPointLeaderboard {
+  uint32 leaderboard_id = 1;
+}
+
+message ResFetchRankPointLeaderboard {
+  Error error = 1;
+  repeated Item items = 2;
+  uint32 last_refresh_time = 3;
+  message Item {
+    uint32 account_id = 1;
+    uint32 rank = 2;
+    PlayerBaseView view = 3;
+    uint32 point = 4;
+  }
+
+}
+
+message ReqGainRankPointReward {
+  uint32 leaderboard_id = 1;
+  uint32 activity_id = 2;
 }
 
 message ActionMJStart {
@@ -2363,6 +2491,7 @@ message HuleInfo {
   uint32 point_zimo_qin = 16;
   uint32 point_zimo_xian = 17;
   uint32 title_id = 18;
+  uint32 point_sum = 19;
 }
 
 message TingPaiInfo {
@@ -2371,6 +2500,7 @@ message TingPaiInfo {
   bool yiman = 3;
   uint32 count = 4;
   uint32 fu = 5;
+  uint32 biao_dora_count = 6;
 }
 
 message TingPaiDiscardInfo {
@@ -2669,6 +2799,7 @@ message NotifyPlayerConnectionState {
 message NotifyAccountLevelChange {
   AccountLevel origin = 1;
   AccountLevel final = 2;
+  uint32 type = 3;
 }
 
 message NotifyGameFinishReward {
@@ -2680,6 +2811,7 @@ message NotifyGameFinishReward {
   message LevelChange {
     AccountLevel origin = 1;
     AccountLevel final = 2;
+    uint32 type = 3;
   }
 
   message MatchChest {
@@ -2710,6 +2842,24 @@ message NotifyActivityReward {
   message ActivityReward {
     uint32 activity_id = 1;
     repeated RewardSlot rewards = 2;
+  }
+
+}
+
+message NotifyActivityPoint {
+  repeated ActivityPoint activity_points = 1;
+  message ActivityPoint {
+    uint32 activity_id = 1;
+    uint32 point = 2;
+  }
+
+}
+
+message NotifyLeaderboardPoint {
+  repeated LeaderboardPoint leaderboard_points = 1;
+  message LeaderboardPoint {
+    uint32 leaderboard_id = 1;
+    uint32 point = 2;
   }
 
 }

@@ -9,13 +9,16 @@ class Lobby(MSJRpcService):
 "fetchConnectionInfo": pb.ReqCommon,
 "signup": pb.ReqSignupAccount,
 "login": pb.ReqLogin,
+"emailLogin": pb.ReqEmailLogin,
 "oauth2Auth": pb.ReqOauth2Auth,
 "oauth2Check": pb.ReqOauth2Check,
 "oauth2Signup": pb.ReqOauth2Signup,
 "oauth2Login": pb.ReqOauth2Login,
 "createPhoneVerifyCode": pb.ReqCreatePhoneVerifyCode,
+"createEmailVerifyCode": pb.ReqCreateEmailVerifyCode,
 "verfifyCodeForSecure": pb.ReqVerifyCodeForSecure,
 "bindPhoneNumber": pb.ReqBindPhoneNumber,
+"bindEmail": pb.ReqBindEmail,
 "modifyPassword": pb.ReqModifyPassword,
 "bindAccount": pb.ReqBindAccount,
 "logout": pb.ReqLogout,
@@ -45,7 +48,7 @@ class Lobby(MSJRpcService):
 "addCollectedGameRecord": pb.ReqAddCollectedGameRecord,
 "removeCollectedGameRecord": pb.ReqRemoveCollectedGameRecord,
 "changeCollectedGameRecordRemarks": pb.ReqChangeCollectedGameRecordRemarks,
-"fetchLevelLeaderboard": pb.ReqCommon,
+"fetchLevelLeaderboard": pb.ReqLevelLeaderboard,
 "fetchMultiAccountBrief": pb.ReqMultiAccountId,
 "fetchFriendList": pb.ReqCommon,
 "fetchFriendApplyList": pb.ReqCommon,
@@ -57,6 +60,8 @@ class Lobby(MSJRpcService):
 "fetchAccountState": pb.ReqAccountList,
 "fetchBagInfo": pb.ReqCommon,
 "useBagItem": pb.ReqUseBagItem,
+"openManualItem": pb.ReqOpenManualItem,
+"openRandomRewardItem": pb.ReqOpenRandomRewardItem,
 "composeShard": pb.ReqComposeShard,
 "fetchAnnouncement": pb.ReqCommon,
 "readAnnouncement": pb.ReqReadAnnouncement,
@@ -160,18 +165,24 @@ class Lobby(MSJRpcService):
 "fetchAccountActivityData": pb.ReqCommon,
 "exchangeActivityItem": pb.ReqExchangeActivityItem,
 "completeActivityTask": pb.ReqCompleteActivityTask,
+"gainAccumulatedPointActivityReward": pb.ReqGainAccumulatedPointActivityReward,
+"fetchRankPointLeaderboard": pb.ReqFetchRankPointLeaderboard,
+"gainRankPointReward": pb.ReqGainRankPointReward,
     }
     _res = {
 "fetchConnectionInfo": pb.ResConnectionInfo,
 "signup": pb.ResSignupAccount,
 "login": pb.ResLogin,
+"emailLogin": pb.ResLogin,
 "oauth2Auth": pb.ResOauth2Auth,
 "oauth2Check": pb.ResOauth2Check,
 "oauth2Signup": pb.ResOauth2Signup,
 "oauth2Login": pb.ResLogin,
 "createPhoneVerifyCode": pb.ResCommon,
+"createEmailVerifyCode": pb.ResCommon,
 "verfifyCodeForSecure": pb.ResVerfiyCodeForSecure,
 "bindPhoneNumber": pb.ResCommon,
+"bindEmail": pb.ResCommon,
 "modifyPassword": pb.ResCommon,
 "bindAccount": pb.ResCommon,
 "logout": pb.ResLogout,
@@ -213,6 +224,8 @@ class Lobby(MSJRpcService):
 "fetchAccountState": pb.ResAccountStates,
 "fetchBagInfo": pb.ResBagInfo,
 "useBagItem": pb.ResCommon,
+"openManualItem": pb.ResCommon,
+"openRandomRewardItem": pb.ResOpenRandomRewardItem,
 "composeShard": pb.ResCommon,
 "fetchAnnouncement": pb.ResAnnouncement,
 "readAnnouncement": pb.ResCommon,
@@ -316,6 +329,9 @@ class Lobby(MSJRpcService):
 "fetchAccountActivityData": pb.ResAccountActivityData,
 "exchangeActivityItem": pb.ResExchangeActivityItem,
 "completeActivityTask": pb.ResCommon,
+"gainAccumulatedPointActivityReward": pb.ResCommon,
+"fetchRankPointLeaderboard": pb.ResFetchRankPointLeaderboard,
+"gainRankPointReward": pb.ResCommon,
     }
 
     def get_package_name(self):
@@ -343,6 +359,10 @@ class Lobby(MSJRpcService):
         return await self.call_method("login", req)
 
 
+    async def emailLogin(self, req):
+        return await self.call_method("emailLogin", req)
+
+
     async def oauth2Auth(self, req):
         return await self.call_method("oauth2Auth", req)
 
@@ -363,12 +383,20 @@ class Lobby(MSJRpcService):
         return await self.call_method("createPhoneVerifyCode", req)
 
 
+    async def createEmailVerifyCode(self, req):
+        return await self.call_method("createEmailVerifyCode", req)
+
+
     async def verfifyCodeForSecure(self, req):
         return await self.call_method("verfifyCodeForSecure", req)
 
 
     async def bindPhoneNumber(self, req):
         return await self.call_method("bindPhoneNumber", req)
+
+
+    async def bindEmail(self, req):
+        return await self.call_method("bindEmail", req)
 
 
     async def modifyPassword(self, req):
@@ -533,6 +561,14 @@ class Lobby(MSJRpcService):
 
     async def useBagItem(self, req):
         return await self.call_method("useBagItem", req)
+
+
+    async def openManualItem(self, req):
+        return await self.call_method("openManualItem", req)
+
+
+    async def openRandomRewardItem(self, req):
+        return await self.call_method("openRandomRewardItem", req)
 
 
     async def composeShard(self, req):
@@ -945,6 +981,18 @@ class Lobby(MSJRpcService):
 
     async def completeActivityTask(self, req):
         return await self.call_method("completeActivityTask", req)
+
+
+    async def gainAccumulatedPointActivityReward(self, req):
+        return await self.call_method("gainAccumulatedPointActivityReward", req)
+
+
+    async def fetchRankPointLeaderboard(self, req):
+        return await self.call_method("fetchRankPointLeaderboard", req)
+
+
+    async def gainRankPointReward(self, req):
+        return await self.call_method("gainRankPointReward", req)
 
 
 
