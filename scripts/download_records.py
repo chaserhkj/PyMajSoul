@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+try:
+    import script_env
+except ImportError:
+    pass
 import asyncio
 import PyMajsoul.majsoul_pb2 as pb
 from PyMajsoul.majsoul_msjrpc import Lobby
