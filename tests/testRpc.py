@@ -8,7 +8,7 @@ import getpass
 import uuid 
 
 async def main():
-    channel = MSJRpcChannel("wss://mj-srv-7.majsoul.com:4131/")
+    channel = MSJRpcChannel("wss://gateway-v2.maj-soul.com:6443/")
     lobby = Lobby(channel)
     await channel.connect()
     req = pb.ReqLogin()
@@ -18,7 +18,7 @@ async def main():
     req.device.device_type = 'pc'
     req.device.browser = 'safari'
     req.random_key = str(uuid.uuid1())
-    req.client_version = 'v0.5.43.w'
+    req.client_version = 'v0.8.64.w'
     req.gen_access_token = True
     req.currency_platforms.append(2)
     res = await lobby.login(req)

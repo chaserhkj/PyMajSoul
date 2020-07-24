@@ -80,12 +80,12 @@ async def relogin(lobby):
 
 async def main():
     async with aiohttp.ClientSession() as session:
-        async with session.get("https://majsoul.union-game.com/0/version.json") as res:
+        async with session.get("https://game.maj-soul.com/1/version.json") as res:
             version = await res.json()
             version = version["version"]
-        async with session.get("https://majsoul.union-game.com/0/v{}/config.json".format(version)) as res:
+        async with session.get("https://game.maj-soul.com/1/v{}/config.json".format(version)) as res:
             config = await res.json()
-            url = config["ip"][0]["region_urls"]["mainland"]
+            url = config["ip"][0]["region_urls"]
         async with session.get(url + "?service=ws-gateway&protocol=ws&ssl=true") as res:
             servers = await res.json()
             servers = servers["servers"]

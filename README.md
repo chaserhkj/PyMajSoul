@@ -1,3 +1,3 @@
 # Protocol description file
 
-Downloaded from [this data point](https://majsoul.union-game.com/0/v0.5.1.w/res/proto/liqi.json).
+Downloaded from [this data point](https://game.maj-soul.com/1/v0.8.41.w/res/proto/liqi.json).
