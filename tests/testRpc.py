@@ -8,7 +8,7 @@ import getpass
 import uuid 
 
 async def main():
-    channel = MSJRpcChannel("wss://gateway-v2.maj-soul.com:6443/")
+    channel = MSJRpcChannel("wss://gateway-v2.maj-soul.com:6443/gateway")
     lobby = Lobby(channel)
     await channel.connect()
     req = pb.ReqLogin()

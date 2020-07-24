@@ -27,7 +27,7 @@ else:
     basedir = sys.argv[1]
     decode_only = False
 
-async def manual_login(lobby):
+async def manual_login(lobby, config):
     print("Manual Logging in")
     req = pb.ReqLogin()
     req.account = input("Username:").encode()
@@ -45,31 +45,31 @@ async def manual_login(lobby):
     res.access_token = "MASKED FOR PRINTING"
     print("Login Result:")
     print(res)
-    with open(".majsoul", "w") as f:
-        print("Saving access token")
-        json.dump({"random_key":uuid_key, "access_token": token}, f)
+    print("Saving access token to config")
+    config["random_key"] = uuid_key
+    config["access_token"] = token
 
-async def relogin(lobby):
-    if not os.path.exists(".majsoul"):
-        print("No access token present")
+async def relogin(lobby, config):
+    print(config)
+    print("Checking access token and random key")
+    if not "access_token" in config:
+        print("Token not present, re-login")
         return False
-    with open(".majsoul") as f:
-        print("Reading access token")
-        token_d = json.load(f)
-
-    print("Checking access token")
+    if not "random_key" in config:
+        print("Random key not recorded, re-login")
+        return False
     req = pb.ReqOauth2Check()
-    req.access_token = token_d["access_token"]
+    req.access_token = config["access_token"]
     res = await lobby.oauth2Check(req)
     if not res.has_account:
         print("Invalid access token")
         return False
     print("Automatic logging in")
     req = pb.ReqOauth2Login()
-    req.access_token = token_d["access_token"]
+    req.access_token = config["access_token"]
     req.device.device_type = 'pc'
     req.device.browser = 'safari'
-    req.random_key = token_d["random_key"]
+    req.random_key = config["random_key"]
     req.client_version = lobby.version
     req.currency_platforms.append(2)
     res = await lobby.oauth2Login(req)
@@ -79,30 +79,79 @@ async def relogin(lobby):
     return True
 
 async def main():
-    async with aiohttp.ClientSession() as session:
-        async with session.get("https://game.maj-soul.com/1/version.json") as res:
-            version = await res.json()
-            version = version["version"]
-        async with session.get("https://game.maj-soul.com/1/v{}/config.json".format(version)) as res:
-            config = await res.json()
-            url = config["ip"][0]["region_urls"]
-        async with session.get(url + "?service=ws-gateway&protocol=ws&ssl=true") as res:
-            servers = await res.json()
-            servers = servers["servers"]
-            server = random.choice(servers)
-            endpoint = "wss://{}/".format(server)
+    if os.path.exists(".majsoul"):
+        print("Loading config")
+        with open(".majsoul") as f:
+            config = json.load(f)
+    else:
+        print("New config")
+        config = {}
 
-    print("Chosen endpoint: {}".format(endpoint))
-    channel = MSJRpcChannel(endpoint)
+    async with aiohttp.ClientSession() as session:
+        if not "version" in config:
+            print("Querying version")
+            async with session.get("https://game.maj-soul.com/1/version.json") as res:
+                version = await res.json()
+            version = version["version"]
+            config["version"] = version
+            print("Got version {}".format(version))
+        else:
+            version = config["version"]
+            print("Use stored version {}".format(version))
+
+        if "endpoint" in config:
+            endpoint = config["endpoint"]
+            print("Use last used endpoint {}".format(endpoint))
+            channel = MSJRpcChannel(endpoint)
+            try:
+                await channel.connect()
+            except Exception:
+                print("Endpoint not avaliable")
+                del endpoint
+                del config["endpoint"]
+
+        if not "endpoint" in config:
+            print("Choosing an endpoint")
+            async with session.get("https://game.maj-soul.com/1/v{}/config.json".format(version)) as res:
+                client_config = await res.json()
+            urls = client_config["ip"][0]["region_urls"]
+            random.shuffle(urls)
+            endpoint_found = False
+            for url in urls:
+                async with session.get(url + "?service=ws-gateway&protocol=ws&ssl=true") as res:
+                    servers = await res.json()
+                servers = servers["servers"]
+                random.shuffle(servers)
+                for server in servers:
+                    endpoint = "wss://{}/gateway".format(server)
+                    print("Chosen endpoint: {}".format(endpoint))
+                    channel = MSJRpcChannel(endpoint)
+
+                    try:
+                        await channel.connect()
+                        endpoint_found = True
+                        config["endpoint"] = endpoint
+                        break
+                    except Exception:
+                        print("Endpoint not avaliable")
+                if endpoint_found:
+                    break
+            if not endpoint_found:
+                raise Exception("No avaliable endpoint")
+            
+
+    print("Connection established with endpoint {}".format(endpoint))
 
     lobby = Lobby(channel)
     lobby.version = version
-    await channel.connect()
-    print("Connection estabilished")
 
-    result = await relogin(lobby)
+    result = await relogin(lobby, config)
     if not result:
-        await manual_login(lobby)
+        await manual_login(lobby, config)
+    
+    print("Login successful, saving config")
+    with open(".majsoul", "w") as f:
+        json.dump(config, f)
 
     print("Fetching record list")
     records = []

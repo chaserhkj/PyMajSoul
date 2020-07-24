@@ -24,7 +24,7 @@ class testService(msjrpc.MSJRpcService):
         return None
 
 async def main():
-    channel = msjrpc.MSJRpcChannel("wss://gateway-v2.maj-soul.com:6443/")
+    channel = msjrpc.MSJRpcChannel("wss://gateway-v2.maj-soul.com:6443/gateway")
     lobby = testService(channel)
     await channel.connect()
     req = pb.ReqLogin()
