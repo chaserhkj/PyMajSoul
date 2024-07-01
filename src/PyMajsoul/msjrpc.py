@@ -6,7 +6,7 @@ class MSJRpcChannel(object):
     def __init__(self, endpoint):
         self._endpoint = endpoint
         self._req_events = {}
-        self._new_req_idx = 1;
+        self._new_req_idx = 1
         self._res = {}
         self._hooks = {}
 

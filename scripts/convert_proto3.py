@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 import json
+import shutil
 import sys
 from io import StringIO
 from collections import OrderedDict
 from pprint import pprint
 
+assert len(sys.argv) == 3
+
 filename = sys.argv[1]
+out_file = sys.argv[2]
 data = json.load(open(filename), object_pairs_hook=OrderedDict)
 buf = StringIO()
 buf.write('syntax = "proto3";\n\n')
@@ -68,4 +72,11 @@ def parse_item(name, item):
 for name in data:
     parse_item(name, data[name])
 
+
+
 print(buf.getvalue())
+
+
+with open(out_file, 'w') as f:
+    buf.seek(0)
+    shutil.copyfileobj(buf, f)

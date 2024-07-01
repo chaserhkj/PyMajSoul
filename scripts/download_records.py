@@ -19,28 +19,42 @@ import json
 import os
 import sys
 import base64
+import traceback
 
-if sys.argv[1] == "decode":
-    basedir = sys.argv[2]
-    decode_only = True
+if len(sys.argv) > 1:
+    if sys.argv[1] == "decode":
+        basedir = sys.argv[2]
+        decode_only = True
+    else:
+        basedir = sys.argv[1]
+        decode_only = False
 else:
-    basedir = sys.argv[1]
+    basedir = "records"
     decode_only = False
 
-async def manual_login(lobby, config):
+async def manual_login(lobby: Lobby, config):
     print("Manual Logging in")
     req = pb.ReqLogin()
     req.account = input("Username:").encode()
     pwd = getpass.getpass()
     req.password = hmac.new(b'lailai', pwd.encode(), hashlib.sha256).hexdigest()
-    req.device.device_type = 'pc'
-    req.device.browser = 'safari'
+    req.device.platform = 'pc'
+    req.device.hardware = 'pc'
+    req.device.os = 'mac'
+    req.device.is_browser = True
+    req.device.software = 'Chrome'
+    req.device.sale_platform = 'web'
+    req.reconnect = True
     uuid_key = str(uuid.uuid1())
     req.random_key = uuid_key
-    req.client_version = lobby.version
+    req.client_version.resource = lobby.version
+    req.client_version_string = f'web-{lobby.version.replace(".w", "")}'
     req.gen_access_token = True
     req.currency_platforms.append(2)
     res = await lobby.login(req)
+    if res.error.code != 0:
+        raise Exception(f'ReqLogin error code: {res.error.code}')
+    
     token = res.access_token
     res.access_token = "MASKED FOR PRINTING"
     print("Login Result:")
@@ -49,7 +63,7 @@ async def manual_login(lobby, config):
     config["random_key"] = uuid_key
     config["access_token"] = token
 
-async def relogin(lobby, config):
+async def relogin(lobby: Lobby, config):
     print(config)
     print("Checking access token and random key")
     if not "access_token" in config:
@@ -61,19 +75,28 @@ async def relogin(lobby, config):
     req = pb.ReqOauth2Check()
     req.access_token = config["access_token"]
     res = await lobby.oauth2Check(req)
+    print("Oauth2Check:")
+    print(res)
     if not res.has_account:
         print("Invalid access token")
         return False
     print("Automatic logging in")
     req = pb.ReqOauth2Login()
     req.access_token = config["access_token"]
-    req.device.device_type = 'pc'
-    req.device.browser = 'safari'
+    req.device.platform = 'pc'
+    req.device.hardware = 'pc'
+    req.device.os = 'mac'
+    req.device.is_browser = True
+    req.device.software = 'Chrome'
+    req.device.sale_platform = 'web'
     req.random_key = config["random_key"]
-    req.client_version = lobby.version
+    req.client_version.resource = lobby.version
     req.currency_platforms.append(2)
+    req.client_version_string = f'web-{lobby.version.replace(".w", "")}'
     res = await lobby.oauth2Login(req)
-    res.access_token = "MASKED FOR PRINTING"
+    if res.error.code != 0:
+        raise Exception(f'oauth2Login error code: {res.error.code}')
+    print(res.access_token)
     print("Login Result:")
     print(res)
     return True
@@ -88,11 +111,11 @@ async def main():
         config = {}
 
     async with aiohttp.ClientSession() as session:
-        if not "version" in config:
-            print("Querying version")
-            async with session.get("https://game.maj-soul.com/1/version.json") as res:
-                version = await res.json()
-            version = version["version"]
+        print("Querying version")
+        async with session.get("https://game.maj-soul.com/1/version.json") as res:
+            version = await res.json()
+        version = version["version"]
+        if not "version" in config or config["version"] != version:            
             config["version"] = version
             print("Got version {}".format(version))
         else:
@@ -118,7 +141,7 @@ async def main():
             random.shuffle(urls)
             endpoint_found = False
             for url in urls:
-                async with session.get(url + "?service=ws-gateway&protocol=ws&ssl=true") as res:
+                async with session.get(url['url'] + "?service=ws-gateway&protocol=ws&ssl=true") as res:
                     servers = await res.json()
                 servers = servers["servers"]
                 random.shuffle(servers)
@@ -145,26 +168,39 @@ async def main():
     lobby = Lobby(channel)
     lobby.version = version
 
-    result = await relogin(lobby, config)
-    if not result:
-        await manual_login(lobby, config)
+    try:
+        result = await relogin(lobby, config)
+        if not result:
+            await manual_login(lobby, config)
     
-    print("Login successful, saving config")
-    with open(".majsoul", "w") as f:
-        json.dump(config, f)
+        print("Login successful, saving config")
+        with open(".majsoul", "w") as f:
+            json.dump(config, f)
 
+        records = await download_game_record_list(lobby)
+        await decode_records(records)
+    except Exception as e:
+        traceback.print_exc()
+    finally:
+        await channel.close()
+        print("Connection closed")
+
+async def download_game_record_list(lobby: Lobby):
     print("Fetching record list")
     records = []
     current = 1
     step = 30
+    max_len = 200
     while True:
         req = pb.ReqGameRecordList()
         req.start = current
         req.count = step
         print("Fetching {} record ids from {}".format(step, current))
         res = await lobby.fetchGameRecordList(req)
+        if res.error.code != 0:
+            raise Exception(f'fetchGameRecordList error code: {res.error.code}')
         records.extend([r.uuid for r in res.record_list])
-        if len(res.record_list) < step:
+        if len(res.record_list) >= max_len or len(res.record_list) < step:
             break
         current += step
     print("Found {} records".format(len(records)))
@@ -183,11 +219,7 @@ async def main():
         with open(path, "w") as f:
             print("({}/{})Saving {}".format(i + 1, total, r))
             f.write(MessageToJson(res))
-
-    await channel.close()
-    print("Connection closed")
-    await decode_records(records)
-
+    return records
 
 async def decode_records(records):
     total = len(records)

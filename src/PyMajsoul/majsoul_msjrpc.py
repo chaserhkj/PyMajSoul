@@ -7,8 +7,13 @@ from .msjrpc import MSJRpcService
 class Lobby(MSJRpcService):
     _req = {
 "fetchConnectionInfo": pb.ReqCommon,
+"fetchQueueInfo": pb.ReqCommon,
+"cancelQueue": pb.ReqCommon,
+"openidCheck": pb.ReqOpenidCheck,
 "signup": pb.ReqSignupAccount,
 "login": pb.ReqLogin,
+"fetchInfo": pb.ReqCommon,
+"loginSuccess": pb.ReqCommon,
 "emailLogin": pb.ReqEmailLogin,
 "oauth2Auth": pb.ReqOauth2Auth,
 "oauth2Check": pb.ReqOauth2Check,
@@ -32,6 +37,7 @@ class Lobby(MSJRpcService):
 "modifyNickname": pb.ReqModifyNickname,
 "modifyBirthday": pb.ReqModifyBirthday,
 "fetchRoom": pb.ReqCommon,
+"fetchGamingInfo": pb.ReqCommon,
 "createRoom": pb.ReqCreateRoom,
 "joinRoom": pb.ReqJoinRoom,
 "leaveRoom": pb.ReqCommon,
@@ -44,10 +50,13 @@ class Lobby(MSJRpcService):
 "cancelMatch": pb.ReqCancelMatchQueue,
 "fetchAccountInfo": pb.ReqAccountInfo,
 "changeAvatar": pb.ReqChangeAvatar,
+"receiveVersionReward": pb.ReqCommon,
 "fetchAccountStatisticInfo": pb.ReqAccountStatisticInfo,
+"fetchAccountChallengeRankInfo": pb.ReqAccountInfo,
 "fetchAccountCharacterInfo": pb.ReqCommon,
 "shopPurchase": pb.ReqShopPurchase,
 "fetchGameRecord": pb.ReqGameRecord,
+"readGameRecord": pb.ReqGameRecord,
 "fetchGameRecordList": pb.ReqGameRecordList,
 "fetchCollectedGameRecordList": pb.ReqCommon,
 "fetchGameRecordsDetail": pb.ReqGameRecordsDetail,
@@ -55,6 +64,8 @@ class Lobby(MSJRpcService):
 "removeCollectedGameRecord": pb.ReqRemoveCollectedGameRecord,
 "changeCollectedGameRecordRemarks": pb.ReqChangeCollectedGameRecordRemarks,
 "fetchLevelLeaderboard": pb.ReqLevelLeaderboard,
+"fetchChallengeLeaderboard": pb.ReqChallangeLeaderboard,
+"fetchMutiChallengeLevel": pb.ReqMutiChallengeLevel,
 "fetchMultiAccountBrief": pb.ReqMultiAccountId,
 "fetchFriendList": pb.ReqCommon,
 "fetchFriendApplyList": pb.ReqCommon,
@@ -68,13 +79,17 @@ class Lobby(MSJRpcService):
 "useBagItem": pb.ReqUseBagItem,
 "openManualItem": pb.ReqOpenManualItem,
 "openRandomRewardItem": pb.ReqOpenRandomRewardItem,
+"openAllRewardItem": pb.ReqOpenAllRewardItem,
 "composeShard": pb.ReqComposeShard,
-"fetchAnnouncement": pb.ReqCommon,
+"fetchAnnouncement": pb.ReqFetchAnnouncement,
 "readAnnouncement": pb.ReqReadAnnouncement,
 "fetchMailInfo": pb.ReqCommon,
 "readMail": pb.ReqReadMail,
 "deleteMail": pb.ReqDeleteMail,
 "takeAttachmentFromMail": pb.ReqTakeAttachment,
+"receiveAchievementReward": pb.ReqReceiveAchievementReward,
+"receiveAchievementGroupReward": pb.ReqReceiveAchievementGroupReward,
+"fetchAchievementRate": pb.ReqCommon,
 "fetchAchievement": pb.ReqCommon,
 "buyShiLian": pb.ReqBuyShiLian,
 "matchShiLian": pb.ReqCommon,
@@ -89,6 +104,7 @@ class Lobby(MSJRpcService):
 "fetchDailyTask": pb.ReqCommon,
 "refreshDailyTask": pb.ReqRefreshDailyTask,
 "useGiftCode": pb.ReqUseGiftCode,
+"useSpecialGiftCode": pb.ReqUseGiftCode,
 "fetchTitleList": pb.ReqCommon,
 "useTitle": pb.ReqUseTitle,
 "sendClientMessage": pb.ReqSendClientMessage,
@@ -112,9 +128,11 @@ class Lobby(MSJRpcService):
 "doDailySignIn": pb.ReqCommon,
 "doActivitySignIn": pb.ReqDoActivitySignIn,
 "fetchCharacterInfo": pb.ReqCommon,
+"updateCharacterSort": pb.ReqUpdateCharacterSort,
 "changeMainCharacter": pb.ReqChangeMainCharacter,
 "changeCharacterSkin": pb.ReqChangeCharacterSkin,
 "changeCharacterView": pb.ReqChangeCharacterView,
+"setHiddenCharacter": pb.ReqSetHiddenCharacter,
 "sendGiftToCharacter": pb.ReqSendGiftToCharacter,
 "sellItem": pb.ReqSellItem,
 "fetchCommonView": pb.ReqCommon,
@@ -132,7 +150,7 @@ class Lobby(MSJRpcService):
 "buyFromZHP": pb.ReqBuyFromZHP,
 "refreshZHPShop": pb.ReqReshZHPShop,
 "fetchMonthTicketInfo": pb.ReqCommon,
-"payMonthTicket": pb.ReqPayMonthTicket,
+"payMonthTicket": pb.ReqCommon,
 "exchangeCurrency": pb.ReqExchangeCurrency,
 "exchangeChestStone": pb.ReqExchangeCurrency,
 "exchangeDiamond": pb.ReqExchangeCurrency,
@@ -151,27 +169,41 @@ class Lobby(MSJRpcService):
 "createJPDocomoOrder": pb.ReqCreateJPDocomoOrder,
 "createJPWebMoneyOrder": pb.ReqCreateJPWebMoneyOrder,
 "createJPSoftbankOrder": pb.ReqCreateJPSoftbankOrder,
+"createJPPayPayOrder": pb.ReqCreateJPPayPayOrder,
+"fetchJPCommonCreditCardOrder": pb.ReqFetchJPCommonCreditCardOrder,
+"createJPGMOOrder": pb.ReqCreateJPGMOOrder,
 "createENPaypalOrder": pb.ReqCreateENPaypalOrder,
 "createENMasterCardOrder": pb.ReqCreateENMasterCardOrder,
 "createENVisaOrder": pb.ReqCreateENVisaOrder,
 "createENJCBOrder": pb.ReqCreateENJCBOrder,
 "createENAlipayOrder": pb.ReqCreateENAlipayOrder,
+"createKRPaypalOrder": pb.ReqCreateKRPaypalOrder,
+"createKRMasterCardOrder": pb.ReqCreateKRMasterCardOrder,
+"createKRVisaOrder": pb.ReqCreateKRVisaOrder,
+"createKRJCBOrder": pb.ReqCreateKRJCBOrder,
+"createKRAlipayOrder": pb.ReqCreateKRAlipayOrder,
 "createDMMOrder": pb.ReqCreateDMMOrder,
 "createIAPOrder": pb.ReqCreateIAPOrder,
+"createSteamOrder": pb.ReqCreateSteamOrder,
+"verifySteamOrder": pb.ReqVerifySteamOrder,
 "createMyCardAndroidOrder": pb.ReqCreateMyCardOrder,
 "createMyCardWebOrder": pb.ReqCreateMyCardOrder,
+"createPaypalOrder": pb.ReqCreatePaypalOrder,
+"createXsollaOrder": pb.ReqCreateXsollaOrder,
 "verifyMyCardOrder": pb.ReqVerifyMyCardOrder,
 "verificationIAPOrder": pb.ReqVerificationIAPOrder,
 "createYostarSDKOrder": pb.ReqCreateYostarOrder,
 "createBillingOrder": pb.ReqCreateBillingOrder,
 "solveGooglePlayOrder": pb.ReqSolveGooglePlayOrder,
 "solveGooglePayOrderV3": pb.ReqSolveGooglePlayOrderV3,
+"deliverAA32Order": pb.ReqDeliverAA32Order,
 "fetchMisc": pb.ReqCommon,
 "modifySignature": pb.ReqModifySignature,
 "fetchIDCardInfo": pb.ReqCommon,
 "updateIDCardInfo": pb.ReqUpdateIDCardInfo,
 "fetchVipReward": pb.ReqCommon,
 "gainVipReward": pb.ReqGainVipReward,
+"fetchRefundOrder": pb.ReqCommon,
 "fetchCustomizedContestList": pb.ReqFetchCustomizedContestList,
 "fetchCustomizedContestExtendInfo": pb.ReqFetchCustomizedContestExtendInfo,
 "fetchCustomizedContestAuthInfo": pb.ReqFetchCustomizedContestAuthInfo,
@@ -194,10 +226,13 @@ class Lobby(MSJRpcService):
 "completeActivityTask": pb.ReqCompleteActivityTask,
 "completeActivityFlipTask": pb.ReqCompleteActivityTask,
 "completePeriodActivityTask": pb.ReqCompleteActivityTask,
+"completePeriodActivityTaskBatch": pb.ReqCompletePeriodActivityTaskBatch,
 "completeRandomActivityTask": pb.ReqCompleteActivityTask,
 "receiveActivityFlipTask": pb.ReqReceiveActivityFlipTask,
+"completeSegmentTaskReward": pb.ReqCompleteSegmentTaskReward,
 "fetchActivityFlipInfo": pb.ReqFetchActivityFlipInfo,
 "gainAccumulatedPointActivityReward": pb.ReqGainAccumulatedPointActivityReward,
+"gainMultiPointActivityReward": pb.ReqGainMultiPointActivityReward,
 "fetchRankPointLeaderboard": pb.ReqFetchRankPointLeaderboard,
 "gainRankPointReward": pb.ReqGainRankPointReward,
 "richmanActivityNextMove": pb.ReqRichmanNextMove,
@@ -205,11 +240,92 @@ class Lobby(MSJRpcService):
 "richmanActivityChestInfo": pb.ReqRichmanChestInfo,
 "createGameObserveAuth": pb.ReqCreateGameObserveAuth,
 "refreshGameObserveAuth": pb.ReqRefreshGameObserveAuth,
+"fetchActivityBuff": pb.ReqCommon,
+"upgradeActivityBuff": pb.ReqUpgradeActivityBuff,
+"upgradeActivityLevel": pb.ReqUpgradeActivityLevel,
+"receiveUpgradeActivityReward": pb.ReqReceiveUpgradeActivityReward,
+"upgradeChallenge": pb.ReqCommon,
+"refreshChallenge": pb.ReqCommon,
+"fetchChallengeInfo": pb.ReqCommon,
+"forceCompleteChallengeTask": pb.ReqForceCompleteChallengeTask,
+"fetchChallengeSeason": pb.ReqCommon,
+"receiveChallengeRankReward": pb.ReqReceiveChallengeRankReward,
+"fetchABMatchInfo": pb.ReqCommon,
+"buyInABMatch": pb.ReqBuyInABMatch,
+"receiveABMatchReward": pb.ReqCommon,
+"quitABMatch": pb.ReqCommon,
+"startUnifiedMatch": pb.ReqStartUnifiedMatch,
+"cancelUnifiedMatch": pb.ReqCancelUnifiedMatch,
+"fetchGamePointRank": pb.ReqGamePointRank,
+"fetchSelfGamePointRank": pb.ReqGamePointRank,
+"readSNS": pb.ReqReadSNS,
+"replySNS": pb.ReqReplySNS,
+"likeSNS": pb.ReqLikeSNS,
+"digMine": pb.ReqDigMine,
+"fetchLastPrivacy": pb.ReqFetchLastPrivacy,
+"checkPrivacy": pb.ReqCheckPrivacy,
+"responseCaptcha": pb.ReqResponseCaptcha,
+"fetchRPGBattleHistory": pb.ReqFetchRPGBattleHistory,
+"fetchRPGBattleHistoryV2": pb.ReqFetchRPGBattleHistory,
+"receiveRPGRewards": pb.ReqReceiveRPGRewards,
+"receiveRPGReward": pb.ReqReceiveRPGReward,
+"buyArenaTicket": pb.ReqBuyArenaTicket,
+"enterArena": pb.ReqEnterArena,
+"receiveArenaReward": pb.ReqArenaReward,
+"fetchOBToken": pb.ReqFetchOBToken,
+"receiveCharacterRewards": pb.ReqReceiveCharacterRewards,
+"feedActivityFeed": pb.ReqFeedActivityFeed,
+"sendActivityGiftToFriend": pb.ReqSendActivityGiftToFriend,
+"receiveActivityGift": pb.ReqReceiveActivityGift,
+"receiveAllActivityGift": pb.ReqReceiveAllActivityGift,
+"fetchFriendGiftActivityData": pb.ReqFetchFriendGiftActivityData,
+"openPreChestItem": pb.ReqOpenPreChestItem,
+"fetchVoteActivity": pb.ReqFetchVoteActivity,
+"voteActivity": pb.ReqVoteActivity,
+"unlockActivitySpot": pb.ReqUnlockActivitySpot,
+"unlockActivitySpotEnding": pb.ReqUnlockActivitySpotEnding,
+"receiveActivitySpotReward": pb.ReqReceiveActivitySpotReward,
+"deleteAccount": pb.ReqCommon,
+"cancelDeleteAccount": pb.ReqCommon,
+"logReport": pb.ReqLogReport,
+"bindOauth2": pb.ReqBindOauth2,
+"fetchOauth2Info": pb.ReqFetchOauth2,
+"setLoadingImage": pb.ReqSetLoadingImage,
+"fetchShopInterval": pb.ReqCommon,
+"fetchActivityInterval": pb.ReqCommon,
+"fetchRecentFriend": pb.ReqCommon,
+"openGacha": pb.ReqOpenGacha,
+"taskRequest": pb.ReqTaskRequest,
+"simulationActivityTrain": pb.ReqSimulationActivityTrain,
+"fetchSimulationGameRecord": pb.ReqFetchSimulationGameRecord,
+"startSimulationActivityGame": pb.ReqStartSimulationActivityGame,
+"fetchSimulationGameRank": pb.ReqFetchSimulationGameRank,
+"generateCombiningCraft": pb.ReqGenerateCombiningCraft,
+"moveCombiningCraft": pb.ReqMoveCombiningCraft,
+"combiningRecycleCraft": pb.ReqCombiningRecycleCraft,
+"recoverCombiningRecycle": pb.ReqRecoverCombiningRecycle,
+"finishCombiningOrder": pb.ReqFinishCombiningOrder,
+"upgradeVillageBuilding": pb.ReqUpgradeVillageBuilding,
+"receiveVillageBuildingReward": pb.ReqReceiveVillageBuildingReward,
+"startVillageTrip": pb.ReqStartVillageTrip,
+"receiveVillageTripReward": pb.ReqReceiveVillageTripReward,
+"completeVillageTask": pb.ReqCompleteVillageTask,
+"getFriendVillageData": pb.ReqGetFriendVillageData,
+"setVillageWorker": pb.ReqSetVillageWorker,
+"nextRoundVillage": pb.ReqNextRoundVillage,
+"resolveFestivalActivityProposal": pb.ReqResolveFestivalActivityProposal,
+"resolveFestivalActivityEvent": pb.ReqResolveFestivalActivityEvent,
+"buyFestivalProposal": pb.ReqBuyFestivalProposal,
     }
     _res = {
 "fetchConnectionInfo": pb.ResConnectionInfo,
+"fetchQueueInfo": pb.ResFetchQueueInfo,
+"cancelQueue": pb.ResCommon,
+"openidCheck": pb.ResOauth2Check,
 "signup": pb.ResSignupAccount,
 "login": pb.ResLogin,
+"fetchInfo": pb.ResFetchInfo,
+"loginSuccess": pb.ResCommon,
 "emailLogin": pb.ResLogin,
 "oauth2Auth": pb.ResOauth2Auth,
 "oauth2Check": pb.ResOauth2Check,
@@ -233,6 +349,7 @@ class Lobby(MSJRpcService):
 "modifyNickname": pb.ResCommon,
 "modifyBirthday": pb.ResCommon,
 "fetchRoom": pb.ResSelfRoom,
+"fetchGamingInfo": pb.ResFetchGamingInfo,
 "createRoom": pb.ResCreateRoom,
 "joinRoom": pb.ResJoinRoom,
 "leaveRoom": pb.ResCommon,
@@ -245,10 +362,13 @@ class Lobby(MSJRpcService):
 "cancelMatch": pb.ResCommon,
 "fetchAccountInfo": pb.ResAccountInfo,
 "changeAvatar": pb.ResCommon,
+"receiveVersionReward": pb.ResCommon,
 "fetchAccountStatisticInfo": pb.ResAccountStatisticInfo,
+"fetchAccountChallengeRankInfo": pb.ResAccountChallengeRankInfo,
 "fetchAccountCharacterInfo": pb.ResAccountCharacterInfo,
 "shopPurchase": pb.ResShopPurchase,
 "fetchGameRecord": pb.ResGameRecord,
+"readGameRecord": pb.ResCommon,
 "fetchGameRecordList": pb.ResGameRecordList,
 "fetchCollectedGameRecordList": pb.ResCollectedGameRecordList,
 "fetchGameRecordsDetail": pb.ResGameRecordsDetail,
@@ -256,6 +376,8 @@ class Lobby(MSJRpcService):
 "removeCollectedGameRecord": pb.ResRemoveCollectedGameRecord,
 "changeCollectedGameRecordRemarks": pb.ResChangeCollectedGameRecordRemarks,
 "fetchLevelLeaderboard": pb.ResLevelLeaderboard,
+"fetchChallengeLeaderboard": pb.ResChallengeLeaderboard,
+"fetchMutiChallengeLevel": pb.ResMutiChallengeLevel,
 "fetchMultiAccountBrief": pb.ResMultiAccountBrief,
 "fetchFriendList": pb.ResFriendList,
 "fetchFriendApplyList": pb.ResFriendApplyList,
@@ -269,6 +391,7 @@ class Lobby(MSJRpcService):
 "useBagItem": pb.ResCommon,
 "openManualItem": pb.ResCommon,
 "openRandomRewardItem": pb.ResOpenRandomRewardItem,
+"openAllRewardItem": pb.ResOpenAllRewardItem,
 "composeShard": pb.ResCommon,
 "fetchAnnouncement": pb.ResAnnouncement,
 "readAnnouncement": pb.ResCommon,
@@ -276,6 +399,9 @@ class Lobby(MSJRpcService):
 "readMail": pb.ResCommon,
 "deleteMail": pb.ResCommon,
 "takeAttachmentFromMail": pb.ResCommon,
+"receiveAchievementReward": pb.ResReceiveAchievementReward,
+"receiveAchievementGroupReward": pb.ResReceiveAchievementGroupReward,
+"fetchAchievementRate": pb.ResFetchAchievementRate,
 "fetchAchievement": pb.ResAchievement,
 "buyShiLian": pb.ResCommon,
 "matchShiLian": pb.ResCommon,
@@ -290,6 +416,7 @@ class Lobby(MSJRpcService):
 "fetchDailyTask": pb.ResDailyTask,
 "refreshDailyTask": pb.ResRefreshDailyTask,
 "useGiftCode": pb.ResUseGiftCode,
+"useSpecialGiftCode": pb.ResUseSpecialGiftCode,
 "fetchTitleList": pb.ResTitleList,
 "useTitle": pb.ResCommon,
 "sendClientMessage": pb.ResCommon,
@@ -313,9 +440,11 @@ class Lobby(MSJRpcService):
 "doDailySignIn": pb.ResCommon,
 "doActivitySignIn": pb.ResDoActivitySignIn,
 "fetchCharacterInfo": pb.ResCharacterInfo,
+"updateCharacterSort": pb.ResCommon,
 "changeMainCharacter": pb.ResCommon,
 "changeCharacterSkin": pb.ResCommon,
 "changeCharacterView": pb.ResCommon,
+"setHiddenCharacter": pb.ResSetHiddenCharacter,
 "sendGiftToCharacter": pb.ResSendGiftToCharacter,
 "sellItem": pb.ResCommon,
 "fetchCommonView": pb.ResCommonView,
@@ -352,27 +481,41 @@ class Lobby(MSJRpcService):
 "createJPDocomoOrder": pb.ResCreateJPDocomoOrder,
 "createJPWebMoneyOrder": pb.ResCreateJPWebMoneyOrder,
 "createJPSoftbankOrder": pb.ResCreateJPSoftbankOrder,
+"createJPPayPayOrder": pb.ResCreateJPPayPayOrder,
+"fetchJPCommonCreditCardOrder": pb.ResFetchJPCommonCreditCardOrder,
+"createJPGMOOrder": pb.ResCreateJPGMOOrder,
 "createENPaypalOrder": pb.ResCreateENPaypalOrder,
 "createENMasterCardOrder": pb.ResCreateENMasterCardOrder,
 "createENVisaOrder": pb.ResCreateENVisaOrder,
 "createENJCBOrder": pb.ResCreateENJCBOrder,
 "createENAlipayOrder": pb.ResCreateENAlipayOrder,
+"createKRPaypalOrder": pb.ResCreateKRPaypalOrder,
+"createKRMasterCardOrder": pb.ResCreateKRMasterCardOrder,
+"createKRVisaOrder": pb.ResCreateKRVisaOrder,
+"createKRJCBOrder": pb.ResCreateKRJCBOrder,
+"createKRAlipayOrder": pb.ResCreateKRAlipayOrder,
 "createDMMOrder": pb.ResCreateDmmOrder,
 "createIAPOrder": pb.ResCreateIAPOrder,
+"createSteamOrder": pb.ResCreateSteamOrder,
+"verifySteamOrder": pb.ResCommon,
 "createMyCardAndroidOrder": pb.ResCreateMyCardOrder,
 "createMyCardWebOrder": pb.ResCreateMyCardOrder,
+"createPaypalOrder": pb.ResCreatePaypalOrder,
+"createXsollaOrder": pb.ResCreateXsollaOrder,
 "verifyMyCardOrder": pb.ResCommon,
 "verificationIAPOrder": pb.ResVerificationIAPOrder,
 "createYostarSDKOrder": pb.ResCreateYostarOrder,
 "createBillingOrder": pb.ResCreateBillingOrder,
 "solveGooglePlayOrder": pb.ResCommon,
 "solveGooglePayOrderV3": pb.ResCommon,
+"deliverAA32Order": pb.ResCommon,
 "fetchMisc": pb.ResMisc,
 "modifySignature": pb.ResCommon,
 "fetchIDCardInfo": pb.ResIDCardInfo,
 "updateIDCardInfo": pb.ResCommon,
 "fetchVipReward": pb.ResVipReward,
 "gainVipReward": pb.ResCommon,
+"fetchRefundOrder": pb.ResFetchRefundOrder,
 "fetchCustomizedContestList": pb.ResFetchCustomizedContestList,
 "fetchCustomizedContestExtendInfo": pb.ResFetchCustomizedContestExtendInfo,
 "fetchCustomizedContestAuthInfo": pb.ResFetchCustomizedContestAuthInfo,
@@ -395,10 +538,13 @@ class Lobby(MSJRpcService):
 "completeActivityTask": pb.ResCommon,
 "completeActivityFlipTask": pb.ResCommon,
 "completePeriodActivityTask": pb.ResCommon,
+"completePeriodActivityTaskBatch": pb.ResCommon,
 "completeRandomActivityTask": pb.ResCommon,
 "receiveActivityFlipTask": pb.ResReceiveActivityFlipTask,
+"completeSegmentTaskReward": pb.ResCompleteSegmentTaskReward,
 "fetchActivityFlipInfo": pb.ResFetchActivityFlipInfo,
 "gainAccumulatedPointActivityReward": pb.ResCommon,
+"gainMultiPointActivityReward": pb.ResCommon,
 "fetchRankPointLeaderboard": pb.ResFetchRankPointLeaderboard,
 "gainRankPointReward": pb.ResCommon,
 "richmanActivityNextMove": pb.ResRichmanNextMove,
@@ -406,6 +552,82 @@ class Lobby(MSJRpcService):
 "richmanActivityChestInfo": pb.ResRichmanChestInfo,
 "createGameObserveAuth": pb.ResCreateGameObserveAuth,
 "refreshGameObserveAuth": pb.ResRefreshGameObserveAuth,
+"fetchActivityBuff": pb.ResActivityBuff,
+"upgradeActivityBuff": pb.ResActivityBuff,
+"upgradeActivityLevel": pb.ResUpgradeActivityLevel,
+"receiveUpgradeActivityReward": pb.ResReceiveUpgradeActivityReward,
+"upgradeChallenge": pb.ResUpgradeChallenge,
+"refreshChallenge": pb.ResRefreshChallenge,
+"fetchChallengeInfo": pb.ResFetchChallengeInfo,
+"forceCompleteChallengeTask": pb.ResCommon,
+"fetchChallengeSeason": pb.ResChallengeSeasonInfo,
+"receiveChallengeRankReward": pb.ResReceiveChallengeRankReward,
+"fetchABMatchInfo": pb.ResFetchABMatch,
+"buyInABMatch": pb.ResCommon,
+"receiveABMatchReward": pb.ResCommon,
+"quitABMatch": pb.ResCommon,
+"startUnifiedMatch": pb.ResCommon,
+"cancelUnifiedMatch": pb.ResCommon,
+"fetchGamePointRank": pb.ResGamePointRank,
+"fetchSelfGamePointRank": pb.ResFetchSelfGamePointRank,
+"readSNS": pb.ResReadSNS,
+"replySNS": pb.ResReplySNS,
+"likeSNS": pb.ResLikeSNS,
+"digMine": pb.ResDigMine,
+"fetchLastPrivacy": pb.ResFetchLastPrivacy,
+"checkPrivacy": pb.ResCommon,
+"responseCaptcha": pb.ResCommon,
+"fetchRPGBattleHistory": pb.ResFetchRPGBattleHistory,
+"fetchRPGBattleHistoryV2": pb.ResFetchRPGBattleHistoryV2,
+"receiveRPGRewards": pb.ResReceiveRPGRewards,
+"receiveRPGReward": pb.ResReceiveRPGRewards,
+"buyArenaTicket": pb.ResCommon,
+"enterArena": pb.ResCommon,
+"receiveArenaReward": pb.ResArenaReward,
+"fetchOBToken": pb.ResFetchOBToken,
+"receiveCharacterRewards": pb.ResReceiveCharacterRewards,
+"feedActivityFeed": pb.ResFeedActivityFeed,
+"sendActivityGiftToFriend": pb.ResSendActivityGiftToFriend,
+"receiveActivityGift": pb.ResCommon,
+"receiveAllActivityGift": pb.ResReceiveAllActivityGift,
+"fetchFriendGiftActivityData": pb.ResFetchFriendGiftActivityData,
+"openPreChestItem": pb.ResOpenPreChestItem,
+"fetchVoteActivity": pb.ResFetchVoteActivity,
+"voteActivity": pb.ResVoteActivity,
+"unlockActivitySpot": pb.ResCommon,
+"unlockActivitySpotEnding": pb.ResCommon,
+"receiveActivitySpotReward": pb.ResReceiveActivitySpotReward,
+"deleteAccount": pb.ResDeleteAccount,
+"cancelDeleteAccount": pb.ResCommon,
+"logReport": pb.ResCommon,
+"bindOauth2": pb.ResCommon,
+"fetchOauth2Info": pb.ResFetchOauth2,
+"setLoadingImage": pb.ResCommon,
+"fetchShopInterval": pb.ResFetchShopInterval,
+"fetchActivityInterval": pb.ResFetchActivityInterval,
+"fetchRecentFriend": pb.ResFetchrecentFriend,
+"openGacha": pb.ResOpenGacha,
+"taskRequest": pb.ResCommon,
+"simulationActivityTrain": pb.ResSimulationActivityTrain,
+"fetchSimulationGameRecord": pb.ResFetchSimulationGameRecord,
+"startSimulationActivityGame": pb.ResStartSimulationActivityGame,
+"fetchSimulationGameRank": pb.ResFetchSimulationGameRank,
+"generateCombiningCraft": pb.ResGenerateCombiningCraft,
+"moveCombiningCraft": pb.ResMoveCombiningCraft,
+"combiningRecycleCraft": pb.ResCombiningRecycleCraft,
+"recoverCombiningRecycle": pb.ResRecoverCombiningRecycle,
+"finishCombiningOrder": pb.ResFinishCombiningOrder,
+"upgradeVillageBuilding": pb.ResCommon,
+"receiveVillageBuildingReward": pb.ResReceiveVillageBuildingReward,
+"startVillageTrip": pb.ResCommon,
+"receiveVillageTripReward": pb.ResReceiveVillageTripReward,
+"completeVillageTask": pb.ResCompleteVillageTask,
+"getFriendVillageData": pb.ResGetFriendVillageData,
+"setVillageWorker": pb.ResSetVillageWorker,
+"nextRoundVillage": pb.ResNextRoundVillage,
+"resolveFestivalActivityProposal": pb.ResResolveFestivalActivityProposal,
+"resolveFestivalActivityEvent": pb.ResResolveFestivalActivityEvent,
+"buyFestivalProposal": pb.ResBuyFestivalProposal,
     }
 
     def get_package_name(self):
@@ -425,12 +647,32 @@ class Lobby(MSJRpcService):
         return await self.call_method("fetchConnectionInfo", req)
 
 
+    async def fetchQueueInfo(self, req):
+        return await self.call_method("fetchQueueInfo", req)
+
+
+    async def cancelQueue(self, req):
+        return await self.call_method("cancelQueue", req)
+
+
+    async def openidCheck(self, req):
+        return await self.call_method("openidCheck", req)
+
+
     async def signup(self, req):
         return await self.call_method("signup", req)
 
 
     async def login(self, req):
         return await self.call_method("login", req)
+
+
+    async def fetchInfo(self, req):
+        return await self.call_method("fetchInfo", req)
+
+
+    async def loginSuccess(self, req):
+        return await self.call_method("loginSuccess", req)
 
 
     async def emailLogin(self, req):
@@ -525,6 +767,10 @@ class Lobby(MSJRpcService):
         return await self.call_method("fetchRoom", req)
 
 
+    async def fetchGamingInfo(self, req):
+        return await self.call_method("fetchGamingInfo", req)
+
+
     async def createRoom(self, req):
         return await self.call_method("createRoom", req)
 
@@ -573,8 +819,16 @@ class Lobby(MSJRpcService):
         return await self.call_method("changeAvatar", req)
 
 
+    async def receiveVersionReward(self, req):
+        return await self.call_method("receiveVersionReward", req)
+
+
     async def fetchAccountStatisticInfo(self, req):
         return await self.call_method("fetchAccountStatisticInfo", req)
+
+
+    async def fetchAccountChallengeRankInfo(self, req):
+        return await self.call_method("fetchAccountChallengeRankInfo", req)
 
 
     async def fetchAccountCharacterInfo(self, req):
@@ -587,6 +841,10 @@ class Lobby(MSJRpcService):
 
     async def fetchGameRecord(self, req):
         return await self.call_method("fetchGameRecord", req)
+
+
+    async def readGameRecord(self, req):
+        return await self.call_method("readGameRecord", req)
 
 
     async def fetchGameRecordList(self, req):
@@ -615,6 +873,14 @@ class Lobby(MSJRpcService):
 
     async def fetchLevelLeaderboard(self, req):
         return await self.call_method("fetchLevelLeaderboard", req)
+
+
+    async def fetchChallengeLeaderboard(self, req):
+        return await self.call_method("fetchChallengeLeaderboard", req)
+
+
+    async def fetchMutiChallengeLevel(self, req):
+        return await self.call_method("fetchMutiChallengeLevel", req)
 
 
     async def fetchMultiAccountBrief(self, req):
@@ -669,6 +935,10 @@ class Lobby(MSJRpcService):
         return await self.call_method("openRandomRewardItem", req)
 
 
+    async def openAllRewardItem(self, req):
+        return await self.call_method("openAllRewardItem", req)
+
+
     async def composeShard(self, req):
         return await self.call_method("composeShard", req)
 
@@ -695,6 +965,18 @@ class Lobby(MSJRpcService):
 
     async def takeAttachmentFromMail(self, req):
         return await self.call_method("takeAttachmentFromMail", req)
+
+
+    async def receiveAchievementReward(self, req):
+        return await self.call_method("receiveAchievementReward", req)
+
+
+    async def receiveAchievementGroupReward(self, req):
+        return await self.call_method("receiveAchievementGroupReward", req)
+
+
+    async def fetchAchievementRate(self, req):
+        return await self.call_method("fetchAchievementRate", req)
 
 
     async def fetchAchievement(self, req):
@@ -751,6 +1033,10 @@ class Lobby(MSJRpcService):
 
     async def useGiftCode(self, req):
         return await self.call_method("useGiftCode", req)
+
+
+    async def useSpecialGiftCode(self, req):
+        return await self.call_method("useSpecialGiftCode", req)
 
 
     async def fetchTitleList(self, req):
@@ -845,6 +1131,10 @@ class Lobby(MSJRpcService):
         return await self.call_method("fetchCharacterInfo", req)
 
 
+    async def updateCharacterSort(self, req):
+        return await self.call_method("updateCharacterSort", req)
+
+
     async def changeMainCharacter(self, req):
         return await self.call_method("changeMainCharacter", req)
 
@@ -855,6 +1145,10 @@ class Lobby(MSJRpcService):
 
     async def changeCharacterView(self, req):
         return await self.call_method("changeCharacterView", req)
+
+
+    async def setHiddenCharacter(self, req):
+        return await self.call_method("setHiddenCharacter", req)
 
 
     async def sendGiftToCharacter(self, req):
@@ -1001,6 +1295,18 @@ class Lobby(MSJRpcService):
         return await self.call_method("createJPSoftbankOrder", req)
 
 
+    async def createJPPayPayOrder(self, req):
+        return await self.call_method("createJPPayPayOrder", req)
+
+
+    async def fetchJPCommonCreditCardOrder(self, req):
+        return await self.call_method("fetchJPCommonCreditCardOrder", req)
+
+
+    async def createJPGMOOrder(self, req):
+        return await self.call_method("createJPGMOOrder", req)
+
+
     async def createENPaypalOrder(self, req):
         return await self.call_method("createENPaypalOrder", req)
 
@@ -1021,6 +1327,26 @@ class Lobby(MSJRpcService):
         return await self.call_method("createENAlipayOrder", req)
 
 
+    async def createKRPaypalOrder(self, req):
+        return await self.call_method("createKRPaypalOrder", req)
+
+
+    async def createKRMasterCardOrder(self, req):
+        return await self.call_method("createKRMasterCardOrder", req)
+
+
+    async def createKRVisaOrder(self, req):
+        return await self.call_method("createKRVisaOrder", req)
+
+
+    async def createKRJCBOrder(self, req):
+        return await self.call_method("createKRJCBOrder", req)
+
+
+    async def createKRAlipayOrder(self, req):
+        return await self.call_method("createKRAlipayOrder", req)
+
+
     async def createDMMOrder(self, req):
         return await self.call_method("createDMMOrder", req)
 
@@ -1029,12 +1355,28 @@ class Lobby(MSJRpcService):
         return await self.call_method("createIAPOrder", req)
 
 
+    async def createSteamOrder(self, req):
+        return await self.call_method("createSteamOrder", req)
+
+
+    async def verifySteamOrder(self, req):
+        return await self.call_method("verifySteamOrder", req)
+
+
     async def createMyCardAndroidOrder(self, req):
         return await self.call_method("createMyCardAndroidOrder", req)
 
 
     async def createMyCardWebOrder(self, req):
         return await self.call_method("createMyCardWebOrder", req)
+
+
+    async def createPaypalOrder(self, req):
+        return await self.call_method("createPaypalOrder", req)
+
+
+    async def createXsollaOrder(self, req):
+        return await self.call_method("createXsollaOrder", req)
 
 
     async def verifyMyCardOrder(self, req):
@@ -1061,6 +1403,10 @@ class Lobby(MSJRpcService):
         return await self.call_method("solveGooglePayOrderV3", req)
 
 
+    async def deliverAA32Order(self, req):
+        return await self.call_method("deliverAA32Order", req)
+
+
     async def fetchMisc(self, req):
         return await self.call_method("fetchMisc", req)
 
@@ -1083,6 +1429,10 @@ class Lobby(MSJRpcService):
 
     async def gainVipReward(self, req):
         return await self.call_method("gainVipReward", req)
+
+
+    async def fetchRefundOrder(self, req):
+        return await self.call_method("fetchRefundOrder", req)
 
 
     async def fetchCustomizedContestList(self, req):
@@ -1173,6 +1523,10 @@ class Lobby(MSJRpcService):
         return await self.call_method("completePeriodActivityTask", req)
 
 
+    async def completePeriodActivityTaskBatch(self, req):
+        return await self.call_method("completePeriodActivityTaskBatch", req)
+
+
     async def completeRandomActivityTask(self, req):
         return await self.call_method("completeRandomActivityTask", req)
 
@@ -1181,12 +1535,20 @@ class Lobby(MSJRpcService):
         return await self.call_method("receiveActivityFlipTask", req)
 
 
+    async def completeSegmentTaskReward(self, req):
+        return await self.call_method("completeSegmentTaskReward", req)
+
+
     async def fetchActivityFlipInfo(self, req):
         return await self.call_method("fetchActivityFlipInfo", req)
 
 
     async def gainAccumulatedPointActivityReward(self, req):
         return await self.call_method("gainAccumulatedPointActivityReward", req)
+
+
+    async def gainMultiPointActivityReward(self, req):
+        return await self.call_method("gainMultiPointActivityReward", req)
 
 
     async def fetchRankPointLeaderboard(self, req):
@@ -1215,6 +1577,310 @@ class Lobby(MSJRpcService):
 
     async def refreshGameObserveAuth(self, req):
         return await self.call_method("refreshGameObserveAuth", req)
+
+
+    async def fetchActivityBuff(self, req):
+        return await self.call_method("fetchActivityBuff", req)
+
+
+    async def upgradeActivityBuff(self, req):
+        return await self.call_method("upgradeActivityBuff", req)
+
+
+    async def upgradeActivityLevel(self, req):
+        return await self.call_method("upgradeActivityLevel", req)
+
+
+    async def receiveUpgradeActivityReward(self, req):
+        return await self.call_method("receiveUpgradeActivityReward", req)
+
+
+    async def upgradeChallenge(self, req):
+        return await self.call_method("upgradeChallenge", req)
+
+
+    async def refreshChallenge(self, req):
+        return await self.call_method("refreshChallenge", req)
+
+
+    async def fetchChallengeInfo(self, req):
+        return await self.call_method("fetchChallengeInfo", req)
+
+
+    async def forceCompleteChallengeTask(self, req):
+        return await self.call_method("forceCompleteChallengeTask", req)
+
+
+    async def fetchChallengeSeason(self, req):
+        return await self.call_method("fetchChallengeSeason", req)
+
+
+    async def receiveChallengeRankReward(self, req):
+        return await self.call_method("receiveChallengeRankReward", req)
+
+
+    async def fetchABMatchInfo(self, req):
+        return await self.call_method("fetchABMatchInfo", req)
+
+
+    async def buyInABMatch(self, req):
+        return await self.call_method("buyInABMatch", req)
+
+
+    async def receiveABMatchReward(self, req):
+        return await self.call_method("receiveABMatchReward", req)
+
+
+    async def quitABMatch(self, req):
+        return await self.call_method("quitABMatch", req)
+
+
+    async def startUnifiedMatch(self, req):
+        return await self.call_method("startUnifiedMatch", req)
+
+
+    async def cancelUnifiedMatch(self, req):
+        return await self.call_method("cancelUnifiedMatch", req)
+
+
+    async def fetchGamePointRank(self, req):
+        return await self.call_method("fetchGamePointRank", req)
+
+
+    async def fetchSelfGamePointRank(self, req):
+        return await self.call_method("fetchSelfGamePointRank", req)
+
+
+    async def readSNS(self, req):
+        return await self.call_method("readSNS", req)
+
+
+    async def replySNS(self, req):
+        return await self.call_method("replySNS", req)
+
+
+    async def likeSNS(self, req):
+        return await self.call_method("likeSNS", req)
+
+
+    async def digMine(self, req):
+        return await self.call_method("digMine", req)
+
+
+    async def fetchLastPrivacy(self, req):
+        return await self.call_method("fetchLastPrivacy", req)
+
+
+    async def checkPrivacy(self, req):
+        return await self.call_method("checkPrivacy", req)
+
+
+    async def responseCaptcha(self, req):
+        return await self.call_method("responseCaptcha", req)
+
+
+    async def fetchRPGBattleHistory(self, req):
+        return await self.call_method("fetchRPGBattleHistory", req)
+
+
+    async def fetchRPGBattleHistoryV2(self, req):
+        return await self.call_method("fetchRPGBattleHistoryV2", req)
+
+
+    async def receiveRPGRewards(self, req):
+        return await self.call_method("receiveRPGRewards", req)
+
+
+    async def receiveRPGReward(self, req):
+        return await self.call_method("receiveRPGReward", req)
+
+
+    async def buyArenaTicket(self, req):
+        return await self.call_method("buyArenaTicket", req)
+
+
+    async def enterArena(self, req):
+        return await self.call_method("enterArena", req)
+
+
+    async def receiveArenaReward(self, req):
+        return await self.call_method("receiveArenaReward", req)
+
+
+    async def fetchOBToken(self, req):
+        return await self.call_method("fetchOBToken", req)
+
+
+    async def receiveCharacterRewards(self, req):
+        return await self.call_method("receiveCharacterRewards", req)
+
+
+    async def feedActivityFeed(self, req):
+        return await self.call_method("feedActivityFeed", req)
+
+
+    async def sendActivityGiftToFriend(self, req):
+        return await self.call_method("sendActivityGiftToFriend", req)
+
+
+    async def receiveActivityGift(self, req):
+        return await self.call_method("receiveActivityGift", req)
+
+
+    async def receiveAllActivityGift(self, req):
+        return await self.call_method("receiveAllActivityGift", req)
+
+
+    async def fetchFriendGiftActivityData(self, req):
+        return await self.call_method("fetchFriendGiftActivityData", req)
+
+
+    async def openPreChestItem(self, req):
+        return await self.call_method("openPreChestItem", req)
+
+
+    async def fetchVoteActivity(self, req):
+        return await self.call_method("fetchVoteActivity", req)
+
+
+    async def voteActivity(self, req):
+        return await self.call_method("voteActivity", req)
+
+
+    async def unlockActivitySpot(self, req):
+        return await self.call_method("unlockActivitySpot", req)
+
+
+    async def unlockActivitySpotEnding(self, req):
+        return await self.call_method("unlockActivitySpotEnding", req)
+
+
+    async def receiveActivitySpotReward(self, req):
+        return await self.call_method("receiveActivitySpotReward", req)
+
+
+    async def deleteAccount(self, req):
+        return await self.call_method("deleteAccount", req)
+
+
+    async def cancelDeleteAccount(self, req):
+        return await self.call_method("cancelDeleteAccount", req)
+
+
+    async def logReport(self, req):
+        return await self.call_method("logReport", req)
+
+
+    async def bindOauth2(self, req):
+        return await self.call_method("bindOauth2", req)
+
+
+    async def fetchOauth2Info(self, req):
+        return await self.call_method("fetchOauth2Info", req)
+
+
+    async def setLoadingImage(self, req):
+        return await self.call_method("setLoadingImage", req)
+
+
+    async def fetchShopInterval(self, req):
+        return await self.call_method("fetchShopInterval", req)
+
+
+    async def fetchActivityInterval(self, req):
+        return await self.call_method("fetchActivityInterval", req)
+
+
+    async def fetchRecentFriend(self, req):
+        return await self.call_method("fetchRecentFriend", req)
+
+
+    async def openGacha(self, req):
+        return await self.call_method("openGacha", req)
+
+
+    async def taskRequest(self, req):
+        return await self.call_method("taskRequest", req)
+
+
+    async def simulationActivityTrain(self, req):
+        return await self.call_method("simulationActivityTrain", req)
+
+
+    async def fetchSimulationGameRecord(self, req):
+        return await self.call_method("fetchSimulationGameRecord", req)
+
+
+    async def startSimulationActivityGame(self, req):
+        return await self.call_method("startSimulationActivityGame", req)
+
+
+    async def fetchSimulationGameRank(self, req):
+        return await self.call_method("fetchSimulationGameRank", req)
+
+
+    async def generateCombiningCraft(self, req):
+        return await self.call_method("generateCombiningCraft", req)
+
+
+    async def moveCombiningCraft(self, req):
+        return await self.call_method("moveCombiningCraft", req)
+
+
+    async def combiningRecycleCraft(self, req):
+        return await self.call_method("combiningRecycleCraft", req)
+
+
+    async def recoverCombiningRecycle(self, req):
+        return await self.call_method("recoverCombiningRecycle", req)
+
+
+    async def finishCombiningOrder(self, req):
+        return await self.call_method("finishCombiningOrder", req)
+
+
+    async def upgradeVillageBuilding(self, req):
+        return await self.call_method("upgradeVillageBuilding", req)
+
+
+    async def receiveVillageBuildingReward(self, req):
+        return await self.call_method("receiveVillageBuildingReward", req)
+
+
+    async def startVillageTrip(self, req):
+        return await self.call_method("startVillageTrip", req)
+
+
+    async def receiveVillageTripReward(self, req):
+        return await self.call_method("receiveVillageTripReward", req)
+
+
+    async def completeVillageTask(self, req):
+        return await self.call_method("completeVillageTask", req)
+
+
+    async def getFriendVillageData(self, req):
+        return await self.call_method("getFriendVillageData", req)
+
+
+    async def setVillageWorker(self, req):
+        return await self.call_method("setVillageWorker", req)
+
+
+    async def nextRoundVillage(self, req):
+        return await self.call_method("nextRoundVillage", req)
+
+
+    async def resolveFestivalActivityProposal(self, req):
+        return await self.call_method("resolveFestivalActivityProposal", req)
+
+
+    async def resolveFestivalActivityEvent(self, req):
+        return await self.call_method("resolveFestivalActivityEvent", req)
+
+
+    async def buyFestivalProposal(self, req):
+        return await self.call_method("buyFestivalProposal", req)
 
 
 
